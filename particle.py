@@ -9,17 +9,25 @@ class Particle():
         self.radius = radius
         self.color = color
         
-        self.size = (2*radius, 2*radius)
+        self.diameter = 2 * radius
+        self.size = (self.diameter, self.diameter)
         self.rect = pygame.Rect((0, 0), self.size)
         self.rect.center = pos
     
+    def update_radius(self, radius):
+        self.radius = radius
+        self.diameter = 2 * radius
+        self.size = (self.diameter, self.diameter)
+        self.rect.size = self.size
+        self.rect.center = self.pos
+    
     def draw(self, surf):
         pygame.draw.ellipse(surf, self.color, self.rect)
-        # pygame.draw.circle(surf, self.color, self.rect.center, self.radius)
+        # pygame.draw.circle(surf, self.color, self.pos, self.radius)
     
     def update(self, surf):
-        # draw particle
-        self.draw(surf)
+        # update kinematics values
+        self.pos += self.vel * self.game.dt
 
         # handle bouncing off border
         if self.rect.left + self.vel.x + self.game.dt < 0:
@@ -29,11 +37,14 @@ class Particle():
             self.vel.x *= -1
             self.rect.right = self.game.screen.get_width()
         if self.rect.top + self.vel.y + self.game.dt < 0:
-            self.vel.x *= -1
+            self.vel.y *= -1
             self.rect.top = 0
         if self.rect.bottom + self.vel.y * self.game.dt > self.game.screen.get_height():
-            self.vel.x *= -1
+            self.vel.y *= -1
             self.rect.bottom = self.game.screen.get_height()
-            
-        # update kinematics values
-        self.rect.move_ip(self.vel * self.game.dt)
+
+        # sync particle rect
+        self.rect.center = self.pos
+
+        # draw particle
+        self.draw(surf)

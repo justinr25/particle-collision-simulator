@@ -2,6 +2,7 @@ import sys
 import time
 
 import pygame
+import pygame_gui
 
 from utils import display_text
 from particle import Particle
@@ -10,7 +11,7 @@ class Game:
     def __init__(self):
         #setup pygame
         pygame.init()
-        pygame.display.set_caption('pygame-elastic-collision-test')
+        pygame.display.set_caption('pygame-particle-collision-simulator')
         self.monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
         self.is_fullscreen = False
         self.screen_size = (1280, 720)
@@ -19,22 +20,53 @@ class Game:
         self.clock = pygame.time.Clock()
         self.last_time = time.perf_counter()
         self.screen_bg_color = (255, 255, 255)
+        
+        # particle value boundaries
+        self.MASS_MAX = 2000
+        self.MASS_MIN = 5
+        self.RADIUS_MAX = 100
+        self.RADIUS_MIN = 10
+        
+        # setup pygame_gui UI manager
+        self.manager = pygame_gui.UIManager(self.screen_size, 'theme.json')
+
+        # initialize mass and radius sliders
+        self.particle1_mass_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect = pygame.Rect((20, 150), (300, 30)),
+            start_value = self.MASS_MAX,
+            value_range = (self.MASS_MIN, self.MASS_MAX)
+        )
+        self.particle2_mass_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect = pygame.Rect((self.screen.get_width()-320, 150), (300, 30)),
+            start_value = self.MASS_MIN,
+            value_range = (self.MASS_MIN, self.MASS_MAX)
+        )
+        self.particle1_radius_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect = pygame.Rect((20, 250), (300, 30)),
+            start_value = self.RADIUS_MAX,
+            value_range = (self.RADIUS_MIN, self.RADIUS_MAX)
+        )
+        self.particle2_radius_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect = pygame.Rect((self.screen.get_width()-320, 250), (300, 30)),
+            start_value = self.RADIUS_MIN,
+            value_range = (self.RADIUS_MIN, self.RADIUS_MAX)
+        )
 
         # initialize particles
         self.particle1 = Particle(
             game = self,
             pos = pygame.math.Vector2(200, self.screen.get_height() // 2 + 100),
             vel = pygame.math.Vector2(5, 0),
-            mass = 2000,
-            radius = 200,
+            mass = self.MASS_MAX,
+            radius = self.RADIUS_MAX,
             color = (255, 0, 0)
         )
         self.particle2 = Particle(
             game = self,
             pos = pygame.math.Vector2(self.screen.get_width() - 300, self.screen.get_height() // 2 + 100),
             vel = pygame.math.Vector2(-5, 0),
-            mass = 5,
-            radius = 25,
+            mass = self.MASS_MIN,
+            radius = self.RADIUS_MIN,
             color = (0, 255, 0)
         )
 
@@ -81,6 +113,20 @@ class Game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     self.__init__()
 
+                # handle mass sliders moving
+                if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+                    if event.ui_element == self.particle1_mass_slider:
+                        self.particle1.mass = event.value
+                    if event.ui_element == self.particle2_mass_slider:
+                        self.particle2.mass = event.value
+                    if event.ui_element == self.particle1_radius_slider:
+                        self.particle1.update_radius(event.value)
+                    if event.ui_element == self.particle2_radius_slider:
+                        self.particle2.update_radius(event.value)
+
+                # pygame_gui handle events
+                self.manager.process_events(event)
+
             # clear screen
             self.screen.fill(self.screen_bg_color)
 
@@ -100,6 +146,9 @@ class Game:
 
                 self.particle1.vel.x = (m1-m2)/(m1+m2)*v1i + 2*m2/(m1+m2)*v2i
                 self.particle2.vel.x = 2*m1/(m1+m2)*v1i + (m2-m1)/(m1+m2)*v2i
+
+            # display pygame_gui
+            self.manager.draw_ui(self.screen)
 
             # update particles
             self.particle1.update(self.screen)
@@ -123,12 +172,21 @@ class Game:
                 color = self.particle1.color
             )
 
+            # display particle 1 radius
+            display_text(
+                surf = self.screen,
+                text = f'r1: {self.particle1.radius:.2f}',
+                size = 70,
+                pos = (20, 200),
+                color = self.particle1.color
+            )
+
             # display particle 2 velocity
             display_text(
                 surf = self.screen,
                 text = f'v2: {self.particle2.vel.x:.2f}',
                 size = 70,
-                pos = (self.screen.get_width()-250, 20),
+                pos = (self.screen.get_width()-320, 20),
                 color = self.particle2.color
             )
 
@@ -137,9 +195,21 @@ class Game:
                 surf = self.screen,
                 text = f'm1: {self.particle2.mass:.2f}',
                 size = 70,
-                pos = (self.screen.get_width()-250, 100),
+                pos = (self.screen.get_width()-320, 100),
                 color = self.particle2.color
             )
+
+            # display particle 2 radius
+            display_text(
+                surf = self.screen,
+                text = f'r2: {self.particle2.radius:.2f}',
+                size = 70,
+                pos = (self.screen.get_width()-320, 200),
+                color = self.particle2.color
+            )
+
+            # update pygame_gui
+            self.manager.update(self.dt)
 
             # update pygame window
             pygame.display.update()
