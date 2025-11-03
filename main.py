@@ -34,22 +34,26 @@ class Game:
         self.particle1_mass_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect = pygame.Rect((20, 150), (300, 30)),
             start_value = self.MASS_MAX,
-            value_range = (self.MASS_MIN, self.MASS_MAX)
+            value_range = (self.MASS_MIN, self.MASS_MAX),
+            manager = self.manager
         )
         self.particle2_mass_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect = pygame.Rect((self.screen.get_width()-320, 150), (300, 30)),
             start_value = self.MASS_MIN,
-            value_range = (self.MASS_MIN, self.MASS_MAX)
+            value_range = (self.MASS_MIN, self.MASS_MAX),
+            manager = self.manager
         )
         self.particle1_radius_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect = pygame.Rect((20, 250), (300, 30)),
             start_value = self.RADIUS_MAX,
-            value_range = (self.RADIUS_MIN, self.RADIUS_MAX)
+            value_range = (self.RADIUS_MIN, self.RADIUS_MAX),
+            manager = self.manager
         )
         self.particle2_radius_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect = pygame.Rect((self.screen.get_width()-320, 250), (300, 30)),
             start_value = self.RADIUS_MIN,
-            value_range = (self.RADIUS_MIN, self.RADIUS_MAX)
+            value_range = (self.RADIUS_MIN, self.RADIUS_MAX),
+            manager = self.manager
         )
 
         # initialize particles
