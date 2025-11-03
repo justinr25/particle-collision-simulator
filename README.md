@@ -2,7 +2,7 @@
 A Python-based particle collision simulator built with Pygame that allows interactive control of particle mass and radius, demonstrating real-time elastic collisions.
 
 ## Demo
-![Demo of Particle Collision Simulator](assets/particle-collision-demo.gif)
+![Demo of Particle Collision Simulator](assets/particle-collision-simulator-demo.gif)
 
 ## Usage
 1. Install dependencies: `pip install -r requirements.txt`
