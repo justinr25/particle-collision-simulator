@@ -1,5 +1,5 @@
 # Particle Collision Simulator
-A Python-based particle collision simulator built with Pygame that allows interactive control of particle mass and radius, demonstrating real-time elastic collisions.
+A Python-based particle collision simulator built with Pygame and Pygame GUI that allows interactive control of particle mass and radius, demonstrating real-time elastic collisions.
 
 ## Demo
 ![Demo of Particle Collision Simulator](assets/particle-collision-simulator-demo.gif)
